@@ -4,7 +4,32 @@ CHANGELOG
 6.1.0-7 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Add ``scripts/`` helpers to repair items created before the
+  ``library.*`` -> ``bibliotheca.*`` rename: ``fix_rename.py`` (rewrite stale
+  FTI schema strings, purge orphaned browser layers, register the renamed
+  layers) and ``realign_profiles.py`` (re-align GenericSetup profile versions).
+  Run with ``bin/instance run scripts/<name>.py``.
+  [remdub]
+
+- bibliotheca.policy 3.1.2
+
+  - Add upgrade step (1017 -> 1018) to fix ``library.*`` -> ``bibliotheca.*`` rename
+    artifacts left in existing ZODBs: rewrite the stale ``patrimoine`` FTI schema
+    string (fixes a ``RecursionError`` on ``lookupSchema``), purge the orphaned
+    ``ILibraryCoreLayer`` / ``ILibraryPolicyLayer`` browser layers, and register
+    the renamed ``IBibliothecaCoreLayer`` / ``IBibliothecaPolicyLayer`` layers so
+    views/viewlets/tiles bound to them (e.g. the ``existingcontent`` tile) work.
+    [remdub]
+
+- bibliotheca.policy 3.1.1
+
+  - Rename to bibliotheca.policy
+    [bsuttor]
+
+- bibliotheca.core 3.0.1
+
+  - Rename to bibliotheca.core 
+    [bsuttor]
 
 - bibliotheca.policy 3.1.2
 
