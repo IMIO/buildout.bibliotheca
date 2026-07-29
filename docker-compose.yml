@@ -1,26 +1,17 @@
 version: '2.4'
+volumes:
+  library-postgres:
 services:
-  zeo:
+  instance:
     build:
       context: .
-    image: imiobibliotheca
-    volumes:
-      - ./var/blobstorage:/data/blobstorage
-      - ./var/filestorage:/data/filestorage
-      - ./src:/plone/src
-    command: bin/zeoserver fg
-    expose:
-      - 8100
-    healthcheck:
-      # test: ["CMD-SHELL", "nc", "-z", "w5", "127.0.0.1", "8100", "||", "exit", "1"]
-      test: ["CMD", "nc", "-z", "-w5", "127.0.0.1", "8100"]
-  instance:
     image: imiobibliotheca
     ports:
       - 8080:8080
     links:
-      - zeo:db
+      - postgres:db
     depends_on:
+      - postgres
       - reverseproxy
     volumes:
       - ./var/blobstorage:/data/blobstorage
@@ -29,6 +20,15 @@ services:
       - PLONE_EXTENSION_IDS=plone.app.caching:default,plonetheme.barceloneta:default,bibliotheca.policy:default
       - DEFAULT_LANGUAGE=fr
       - ACTIVE_BIGBANG=True
+      - RELSTORAGE_HOSTNAME=db
+      - RELSTORAGE_PORT=5432
+      - RELSTORAGE_DB=${RELSTORAGE_DB:-library}
+      - RELSTORAGE_USER=${RELSTORAGE_USER:-library}
+      - RELSTORAGE_PASSWORD=${RELSTORAGE_PASSWORD}
+      - MEMCACHE_SERVER=memcached
+      - PROJECT_ID=library
+      - ZODB_CACHE_SIZE=30000
+      - ZEO_CLIENT_CACHE_SIZE=256MB
     command: fg
     labels:
       - 'traefik.enable=true'
@@ -36,6 +36,19 @@ services:
       - 'traefik.http.services.instance.loadbalancer.server.port=8080'
       - "traefik.http.routers.instance.middlewares=add-plone"
       - "traefik.http.middlewares.add-plone.addprefix.prefix=/VirtualHostBase/http/portal.localhost/Plone/VirtualHostRoot"
+  postgres:
+    image: postgres:17.6
+    environment:
+      - POSTGRES_DB=${RELSTORAGE_DB:-library}
+      - POSTGRES_USER=${RELSTORAGE_USER:-library}
+      - POSTGRES_PASSWORD=${RELSTORAGE_PASSWORD}
+    volumes:
+      - library-postgres:/var/lib/postgresql/data
+  memcached:
+    image: memcached:1.5.20
+    command:
+      - "-m"
+      - "1024"
   reverseproxy:
     image: traefik
     command:

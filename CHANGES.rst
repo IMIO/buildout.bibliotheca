@@ -31,6 +31,26 @@ CHANGELOG
   - Rename to bibliotheca.core 
     [bsuttor]
 
+- bibliotheca.policy 3.1.2
+
+  - Add upgrade step (1017 -> 1018) to fix ``library.*`` -> ``bibliotheca.*`` rename
+    artifacts left in existing ZODBs: rewrite the stale ``patrimoine`` FTI schema
+    string (fixes a ``RecursionError`` on ``lookupSchema``), purge the orphaned
+    ``ILibraryCoreLayer`` / ``ILibraryPolicyLayer`` browser layers, and register
+    the renamed ``IBibliothecaCoreLayer`` / ``IBibliothecaPolicyLayer`` layers so
+    views/viewlets/tiles bound to them (e.g. the ``existingcontent`` tile) work.
+    [remdub]
+
+- bibliotheca.policy 3.1.1
+
+  - Rename to bibliotheca.policy
+    [bsuttor]
+
+- bibliotheca.core 3.0.1
+
+  - Rename to bibliotheca.core 
+    [bsuttor]
+
 
 6.1.0-6 (2026-07-13)
 --------------------

@@ -1,9 +1,10 @@
-FROM harbor.imio.be/common/plone-base:6.1.5-buildout5 as builder
+FROM harbor.imio.be/common/plone-base:6.1.5-buildout5 AS builder
 LABEL maintainer="Benoît Suttor <benoit.suttor@imio.be>"
 ENV PIP=26.1.2 \
   ZC_BUILDOUT=5.2.0 \
   SETUPTOOLS=81.0.0 \
   WHEEL=0.47.0 \
+  PY_SPY=0.4.2 \
   PLONE_MAJOR=6.1 \
   PLONE_VERSION=6.1.5
 
@@ -28,7 +29,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   python3-pip \
   wget \
   zlib1g-dev \
-  && pip3 install --no-cache-dir pip==$PIP setuptools==$SETUPTOOLS zc.buildout==$ZC_BUILDOUT py-spy --break-system-packages
+  && pip3 install --no-cache-dir pip==$PIP setuptools==$SETUPTOOLS zc.buildout==$ZC_BUILDOUT py-spy==$PY_SPY --break-system-packages
 
 WORKDIR /plone
 COPY --chown=imio *.cfg /plone/
@@ -43,8 +44,6 @@ ENV PIP=26.1.2 \
   WHEEL=0.47.0 \
   PLONE_MAJOR=6.1 \
   PLONE_VERSION=6.1.5 \
-  ZEO_HOST=zeo \
-  ZEO_PORT=8100 \
   HOSTNAME_HOST=local \
   PROJECT_ID=bibliotheca \
   PLONE_EXTENSION_IDS=plone.app.caching:default,plonetheme.barceloneta:default,bibliotheca.policy:default \
