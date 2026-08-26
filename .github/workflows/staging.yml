@@ -93,8 +93,8 @@ jobs:
         uses: IMIO/gha/k8s-update-tag@v5
         with:
           TAG: ${{ env.SHORT_SHA }}
-          REPO_TOKEN_NAME: ${{ secrets.SMARTWEB_ARGOCD_TOKEN_NAME }}
-          REPO_ACCESS_TOKEN: ${{ secrets.SMARTWEB_ARGOCD_ACCESS_TOKEN }}
+          REPO_TOKEN_NAME: ${{ secrets.BIBLIOTHECA_ARGOCD_TOKEN_NAME }}
+          REPO_ACCESS_TOKEN: ${{ secrets.BIBLIOTHECA_ARGOCD_ACCESS_TOKEN }}
           REPO_URL: ${{ secrets.BIBLIOTHECA_ARGOCD_REPO_URL }}
           TARGET_BRANCH: main
           VALUES_FILE_PATH: staging/common/values.yaml
