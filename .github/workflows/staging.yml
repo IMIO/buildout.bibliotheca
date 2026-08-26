@@ -21,10 +21,12 @@ jobs:
     steps:
       - name: Build tags
         run: |
+          SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
           {
             echo 'IMAGE_TAGS<<EOF'
             echo '${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:staging'
             echo '${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:staging-${{ github.run_number }}'
+            echo '${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME }}:'$SHORT_SHA
             echo EOF
           } >> $GITHUB_ENV
       - name: Build push and notify
@@ -80,3 +82,19 @@ jobs:
           RUNDECK_JOB_ID: ${{ vars.RUNDECK_JOB_ID }}
           RUNDECK_PARAMETERS: '-F "filter=name ${{ vars.NODE_NAME }}" -F "option.tag=${{ vars.IMAGE_TAG_STAGING }}" -F "option.image_name=${{ vars.IMAGE_NAME }}"'
           MATTERMOST_WEBHOOK_URL: ${{ secrets.SMARTWEB_MATTERMOST_WEBHOOK_URL }}
+  deploy-on-k8s:
+    needs: [trivy-image, trivy-fs]
+    environment: staging
+    runs-on: gha-runners-smartweb
+    steps:
+      - name: Build short SHA
+        run: echo "SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
+      - name: Update Kubernetes tag
+        uses: IMIO/gha/k8s-update-tag@v5
+        with:
+          TAG: ${{ env.SHORT_SHA }}
+          REPO_TOKEN_NAME: ${{ secrets.SMARTWEB_ARGOCD_TOKEN_NAME }}
+          REPO_ACCESS_TOKEN: ${{ secrets.SMARTWEB_ARGOCD_ACCESS_TOKEN }}
+          REPO_URL: ${{ secrets.BIBLIOTHECA_ARGOCD_REPO_URL }}
+          TARGET_BRANCH: main
+          VALUES_FILE_PATH: staging/common/values.yaml
