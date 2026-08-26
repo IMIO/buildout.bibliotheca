@@ -4,6 +4,9 @@ CHANGELOG
 6.1.0-8 (unreleased)
 --------------------
 
+- add plone.observability
+  [bsuttor]
+
 - Remove unused version pins left over from ``pas.plugins.imio``, which was replaced
   by ``pas.plugins.kimug``: ``authomatic``, ``pas.plugins.authomatic`` and
   ``plone-app-changeownership``
