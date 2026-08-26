@@ -7,6 +7,7 @@ no longer importable (i.e. removed from the buildout/environment).
 
 Uses the same detection logic as Products.CMFPlone.browser.admin.Upgrade.missing_packages.
 """
+
 import transaction
 from importlib import import_module
 from importlib.metadata import PackageNotFoundError, distribution
@@ -15,7 +16,7 @@ from importlib.metadata import PackageNotFoundError, distribution
 # (e.g. cleaned up by upgrade steps in plone.app.upgrade), so don't nuke them.
 IGNORE = {"Products.CMFFormController"}
 
-DRY_RUN = True  # set to False once you've reviewed the output
+DRY_RUN = False  # set to False once you've reviewed the output
 
 
 def find_missing_packages(setup):
