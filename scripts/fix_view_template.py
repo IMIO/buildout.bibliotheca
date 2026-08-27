@@ -8,17 +8,30 @@ app = makerequest(app)  # noqa: F821 (``app`` is injected by bin/instance run)
 newSecurityManager(None, system_user)
 
 site = app.Plone
-front_page = site["front-page"]
-layout = ILayoutAware(front_page)
-content = layout.content
+catalog = site.portal_catalog
 
 old = '"view_template": ""'
 new = '"view_template": "default_layout"'
 
-if old in content:
-    layout.content = content.replace(old, new)
+fixed = []
+
+for brain in catalog.unrestrictedSearchResults():
+    try:
+        obj = brain.getObject()
+    except Exception:
+        continue
+    layout = ILayoutAware(obj, None)
+    if layout is None:
+        continue
+    content = layout.content or ""
+    if old in content:
+        layout.content = content.replace(old, new)
+        fixed.append("/".join(obj.getPhysicalPath()))
+
+if fixed:
     transaction.commit()
-    print("Fixed: replaced empty view_template with 'default_layout' on /Plone/front-page")
+    print(f"Fixed {len(fixed)} object(s):")
+    for path in fixed:
+        print(" -", path)
 else:
-    print("Pattern not found — no changes made. Dumping current content for inspection:")
-    print(content)
+    print("No objects found with an empty view_template tile — no changes made.")
