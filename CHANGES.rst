@@ -4,6 +4,9 @@ CHANGELOG
 6.2.0-2 (unreleased)
 --------------------
 
+- Add script to fix empty view_template field in existingcontent tile.
+  [bsuttor]
+
 - collective.big.bang 1.2.2
 
   - Fix `upgrade-steps` script (and `expansion.started`) raising
