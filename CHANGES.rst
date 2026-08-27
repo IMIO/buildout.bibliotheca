@@ -4,7 +4,8 @@ CHANGELOG
 6.2.0-3 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Improve script to fix empty view_template not only on front-page.
+  [bsuttor]
 
 
 6.2.0-2 (2026-08-27)
