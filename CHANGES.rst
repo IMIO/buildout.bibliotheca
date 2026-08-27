@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-6.2.0-2 (unreleased)
+6.2.0-2 (2026-08-27)
 --------------------
 
 - Add script to fix empty view_template field in existingcontent tile.
