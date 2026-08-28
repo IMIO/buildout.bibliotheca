@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-6.2.0-3 (unreleased)
+6.2.0-3 (2026-08-28)
 --------------------
 
 - Improve script to fix empty view_template not only on front-page.
