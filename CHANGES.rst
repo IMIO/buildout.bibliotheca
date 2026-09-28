@@ -4,7 +4,8 @@ CHANGELOG
 6.2.0-4 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Migrate to Plone 6.2.2
+  [remdub]
 
 
 6.2.0-3 (2026-08-28)
