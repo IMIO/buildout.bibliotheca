@@ -28,6 +28,18 @@ upgrade-steps: ## Run upgrade steps
 lint: ## Run pre-commit hooks
 	uvx pre-commit run --all
 
+.PHONY: garage-init
+garage-init: ## Initialise local Garage S3 storage (layout, key, bucket) for docker-compose
+	docker compose up -d garage
+	@sleep 2
+	NODE=$$(docker compose exec -T garage /garage node id -q | cut -d@ -f1) && \
+	docker compose exec -T garage /garage layout assign -z dc1 -c 1G $$NODE && \
+	docker compose exec -T garage /garage layout apply --version 1
+	set -a && . ./.env && set +a && \
+	docker compose exec -T garage /garage key import --yes -n plone $$S3_ACCESS_KEY $$S3_SECRET_KEY && \
+	docker compose exec -T garage /garage bucket create $${S3_BUCKET_NAME:-zodb-blobs} && \
+	docker compose exec -T garage /garage bucket allow --read --write --owner $${S3_BUCKET_NAME:-zodb-blobs} --key plone
+
 .venv:
 	@echo "Creating virtual environment with uv"
 	uv venv

@@ -1,0 +1,22 @@
+# Single-node Garage (S3-compatible) for local docker-compose only.
+# Secrets below are development values, never reuse them elsewhere.
+metadata_dir = "/var/lib/garage/meta"
+data_dir = "/var/lib/garage/data"
+db_engine = "sqlite"
+
+replication_factor = 1
+
+rpc_bind_addr = "[::]:3901"
+rpc_public_addr = "127.0.0.1:3901"
+rpc_secret = "cf4baa8d876640454ace75ab4d567e4dc0e0909d4f7f5f4f225de00b3e301dd8"
+
+[s3_api]
+s3_region = "garage"
+api_bind_addr = "[::]:3900"
+# boto3 uses virtual-hosted style requests (<bucket>.garage:3900), see the
+# network alias of the garage service in docker-compose.yml
+root_domain = ".garage"
+
+[admin]
+api_bind_addr = "[::]:3903"
+admin_token = "rAUReMad2ihEayfYL8LZLpdn0PTwJygM"

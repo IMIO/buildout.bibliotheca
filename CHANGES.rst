@@ -7,6 +7,11 @@ CHANGELOG
 - Migrate to Plone 6.2.2
   [remdub]
 
+- Switch production storage from RelStorage to zodb-pgjsonb, with blobs
+  larger than 64KB stored in S3 (Garage in docker-compose). Add
+  ``migrate.cfg`` to migrate RelStorage data with zodb-convert.
+  [bsuttor]
+
 
 6.2.0-3 (2026-08-28)
 --------------------
