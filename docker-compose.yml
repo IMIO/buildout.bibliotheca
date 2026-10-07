@@ -1,6 +1,7 @@
 version: '2.4'
 volumes:
   library-postgres:
+  library-blobcache:
   library-garage-meta:
   library-garage-data:
 services:
@@ -17,7 +18,7 @@ services:
       - garage
       - reverseproxy
     volumes:
-      - ./var/blobstorage:/data/blobstorage
+      - library-blobcache:/data/blobstorage
       - ./src:/plone/src
     environment:
       - PLONE_EXTENSION_IDS=plone.app.caching:default,plonetheme.barceloneta:default,bibliotheca.policy:default
