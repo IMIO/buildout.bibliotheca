@@ -6,7 +6,7 @@ dev
 ---
 Run these commands::
 
-    make buildout
+    just install
     ./bin/instance fg
 
 prod
@@ -24,16 +24,15 @@ Add imio user to your environment::
     sudo chmod 664 -R var/filestorage/*
     sudo chown $USERNAME:imio -R var/filestorage
 
-Second get eggs to build quickly and build image::
+Second build the image::
 
-    make eggs
     docker-compose build
 
 Copy ``.env.example`` to ``.env`` (or add the ``PGJSONB_*`` and ``S3_*``
 variables to your existing ``.env``) and initialise the local Garage S3
 storage once::
 
-    make garage-init
+    just garage-init
 
 Finally start docker-compose::
 
