@@ -16,6 +16,7 @@ services:
       - postgres
       - garage
       - reverseproxy
+      - jaeger
     volumes:
       - library-blobcache:/data/blobstorage
     environment:
@@ -37,6 +38,10 @@ services:
       - S3_USE_SSL=false
       - PROJECT_ID=library
       - ZODB_CACHE_SIZE=30000
+      # OpenTelemetry tracing (plone.observability), gRPC OTLP exporter
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - OTEL_SERVICE_NAME=bibliotheca
+      - PLONE_OBSERVABILITY_OTEL_INSTRUMENTORS=1
     command: fg
     labels:
       - 'traefik.enable=true'
@@ -67,6 +72,12 @@ services:
         aliases:
           # virtual-hosted style bucket address used by boto3
           - ${S3_BUCKET_NAME:-zodb-blobs}.garage
+  jaeger:
+    # OpenTelemetry collector and trace viewer
+    image: jaegertracing/jaeger:2.21.0
+    ports:
+      - 16686:16686 # UI
+      - 4317:4317 # OTLP gRPC
   reverseproxy:
     image: traefik
     command:

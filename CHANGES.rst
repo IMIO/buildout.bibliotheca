@@ -4,6 +4,11 @@ CHANGELOG
 6.2.0-4 (unreleased)
 --------------------
 
+- Enable OpenTelemetry tracing: plone.observability 1.1.0 with its
+  ``opentelemetry`` extra and WSGI filter (plus SQL, S3 and HTTP
+  instrumentors in production), and a Jaeger collector in docker-compose.
+  [remdub]
+
 - collective.big.bang 1.2.3
 
   - `create-site` script now reads extension profiles from `PLONE_EXTENSION_IDS`,

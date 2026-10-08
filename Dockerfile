@@ -47,7 +47,9 @@ ENV PIP=26.1.2 \
   HOSTNAME_HOST=local \
   PROJECT_ID=bibliotheca \
   PLONE_EXTENSION_IDS=plone.app.caching:default,plonetheme.barceloneta:default,bibliotheca.policy:default,plone.pgcatalog:default \
-  DEFAULT_LANGUAGE=fr
+  DEFAULT_LANGUAGE=fr \
+  OTEL_SERVICE_NAME=bibliotheca \
+  OTEL_PYTHON_WSGI_EXCLUDED_URLS='^/ok$'
 
 VOLUME /data/blobstorage
 WORKDIR /plone
