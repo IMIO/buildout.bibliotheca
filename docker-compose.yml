@@ -19,7 +19,7 @@ services:
     volumes:
       - library-blobcache:/data/blobstorage
     environment:
-      - PLONE_EXTENSION_IDS=plone.app.caching:default,plonetheme.barceloneta:default,bibliotheca.policy:default
+      - PLONE_EXTENSION_IDS=plone.app.caching:default,plonetheme.barceloneta:default,bibliotheca.policy:default,plone.pgcatalog:default
       - DEFAULT_LANGUAGE=fr
       - ACTIVE_BIGBANG=True
       - PGJSONB_HOSTNAME=db

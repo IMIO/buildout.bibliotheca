@@ -57,3 +57,18 @@ and run in the instance container::
 Pack the database with::
 
     bin/zodbpack pack.cfg
+
+catalog
+-------
+
+Production uses `plone.pgcatalog <https://bluedynamics.github.io/plone-pgcatalog/>`_:
+``portal_catalog`` is stored in PostgreSQL, in the same ``object_state`` table
+as the zodb-pgjsonb objects (the dev buildout keeps the standard ZCatalog).
+New sites get it from the ``plone.pgcatalog:default`` profile listed in
+``PLONE_EXTENSION_IDS``.
+
+Existing sites (including freshly migrated RelStorage databases) must be
+converted once. This is one-way (there is no uninstall profile), so back up
+the PostgreSQL database first, then run in the instance container::
+
+    bin/instance run scripts/install_pgcatalog.py

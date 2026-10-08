@@ -19,6 +19,12 @@ CHANGELOG
   ``migrate.cfg`` to migrate RelStorage data with zodb-convert.
   [bsuttor]
 
+- Add plone.pgcatalog 1.0.0rc5 (production only): ``portal_catalog`` is
+  stored in PostgreSQL, next to the zodb-pgjsonb objects. New sites get it
+  from ``PLONE_EXTENSION_IDS``; existing ones are converted with
+  ``scripts/install_pgcatalog.py`` (one-way, back up the database first).
+  [remdub]
+
 
 6.2.0-3 (2026-08-28)
 --------------------

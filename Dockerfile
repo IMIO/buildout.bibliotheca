@@ -46,7 +46,7 @@ ENV PIP=26.1.2 \
   PLONE_VERSION=6.2.2 \
   HOSTNAME_HOST=local \
   PROJECT_ID=bibliotheca \
-  PLONE_EXTENSION_IDS=plone.app.caching:default,plonetheme.barceloneta:default,bibliotheca.policy:default \
+  PLONE_EXTENSION_IDS=plone.app.caching:default,plonetheme.barceloneta:default,bibliotheca.policy:default,plone.pgcatalog:default \
   DEFAULT_LANGUAGE=fr
 
 VOLUME /data/blobstorage
