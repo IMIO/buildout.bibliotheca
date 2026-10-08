@@ -4,6 +4,13 @@ CHANGELOG
 6.2.0-4 (unreleased)
 --------------------
 
+- collective.big.bang 1.2.3
+
+  - `create-site` script now reads extension profiles from `PLONE_EXTENSION_IDS`,
+  like the startup hook. `ADDITIONAL_PROFILES` is deprecated: it is still read
+  (with a warning) when `PLONE_EXTENSION_IDS` is not set.
+  [remdub]
+
 - Migrate to Plone 6.2.2
   [remdub]
 
