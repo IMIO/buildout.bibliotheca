@@ -1,0 +1,914 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "Prometheus/Thanos",
+      "description": "Datasource querying Thanos (or Prometheus) in k8s-app-staging",
+      "type": "datasource",
+      "pluginId": "prometheus"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "grafana",
+      "id": "grafana",
+      "name": "Grafana",
+      "version": "12.4"
+    },
+    {
+      "type": "datasource",
+      "id": "prometheus",
+      "name": "Prometheus",
+      "version": "1.0.0"
+    }
+  ],
+  "title": "Bibliotheca - Instances",
+  "description": "All Bibliotheca instances side by side; click one to open its detail dashboard.",
+  "uid": "bibliotheca-fleet",
+  "tags": [
+    "bibliotheca",
+    "plone",
+    "plone.observability"
+  ],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
+  "links": [
+    {
+      "title": "Instance detail",
+      "type": "link",
+      "icon": "dashboard",
+      "url": "/d/bibliotheca-observability/?var-namespace=${namespace}&${__url_time_range}"
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "DS_PROMETHEUS",
+        "type": "datasource",
+        "query": "prometheus",
+        "current": {}
+      },
+      {
+        "name": "namespace",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "query": "label_values(plone_uptime_seconds, namespace)",
+        "current": {
+          "text": "bibliotheca",
+          "value": "bibliotheca"
+        },
+        "refresh": 2,
+        "sort": 1
+      },
+      {
+        "name": "service",
+        "label": "Instances",
+        "type": "query",
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "query": "label_values(plone_uptime_seconds{namespace=\"$namespace\"}, service)",
+        "includeAll": true,
+        "multi": true,
+        "allValue": ".*",
+        "current": {
+          "text": "All",
+          "value": "$__all"
+        },
+        "refresh": 2,
+        "sort": 1
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "row",
+      "title": "Instances",
+      "id": 100,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
+      "type": "table",
+      "title": "Instances",
+      "id": 1,
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "gridPos": {
+        "h": 10,
+        "w": 24,
+        "x": 0,
+        "y": 1
+      },
+      "description": "Current state of every instance (rates over the last 5 minutes). Click an instance to open its dashboard.",
+      "targets": [
+        {
+          "expr": "count by (service) (plone_uptime_seconds{namespace=\"$namespace\", service=~\"$service\"})",
+          "format": "table",
+          "instant": true,
+          "refId": "A"
+        },
+        {
+          "expr": "min by (service) (plone_uptime_seconds{namespace=\"$namespace\", service=~\"$service\"})",
+          "format": "table",
+          "instant": true,
+          "refId": "B"
+        },
+        {
+          "expr": "sum by (service) (rate(plone_requests_total{namespace=\"$namespace\", service=~\"$service\"}[5m]))",
+          "format": "table",
+          "instant": true,
+          "refId": "C"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum by (service, le) (rate(plone_request_duration_seconds_bucket{namespace=\"$namespace\", service=~\"$service\"}[5m])))",
+          "format": "table",
+          "instant": true,
+          "refId": "D"
+        },
+        {
+          "expr": "sum by (service) (rate(plone_request_errors{namespace=\"$namespace\", service=~\"$service\"}[5m]))",
+          "format": "table",
+          "instant": true,
+          "refId": "E"
+        },
+        {
+          "expr": "sum by (service) (rate(plone_process_cpu_seconds{namespace=\"$namespace\", service=~\"$service\"}[5m]))",
+          "format": "table",
+          "instant": true,
+          "refId": "F"
+        },
+        {
+          "expr": "max by (service) (plone_process_rss_bytes{namespace=\"$namespace\", service=~\"$service\"})",
+          "format": "table",
+          "instant": true,
+          "refId": "G"
+        },
+        {
+          "expr": "max by (service) (plone_zodb_db_size_bytes{namespace=\"$namespace\", service=~\"$service\"})",
+          "format": "table",
+          "instant": true,
+          "refId": "H"
+        },
+        {
+          "expr": "max by (service) (plone_zodb_object_count{namespace=\"$namespace\", service=~\"$service\"})",
+          "format": "table",
+          "instant": true,
+          "refId": "I"
+        },
+        {
+          "expr": "max by (service) (sum by (service, pod) (plone_content_total{namespace=\"$namespace\", service=~\"$service\"}))",
+          "format": "table",
+          "instant": true,
+          "refId": "J"
+        }
+      ],
+      "transformations": [
+        {
+          "id": "merge",
+          "options": {}
+        },
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Time": true
+            },
+            "renameByName": {
+              "service": "Instance",
+              "Value #A": "Pods",
+              "Value #B": "Youngest pod",
+              "Value #C": "Req/s",
+              "Value #D": "p95",
+              "Value #E": "Errors/s",
+              "Value #F": "CPU",
+              "Value #G": "Peak RSS (max pod)",
+              "Value #H": "ZODB size",
+              "Value #I": "ZODB objects",
+              "Value #J": "Content items"
+            },
+            "indexByName": {
+              "service": 0,
+              "Value #A": 1,
+              "Value #B": 2,
+              "Value #C": 3,
+              "Value #D": 4,
+              "Value #E": 5,
+              "Value #F": 6,
+              "Value #G": 7,
+              "Value #H": 8,
+              "Value #I": 9,
+              "Value #J": 10
+            }
+          }
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": "auto",
+            "cellOptions": {
+              "type": "auto"
+            }
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Instance"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open instance dashboard",
+                    "url": "/d/bibliotheca-observability/?var-namespace=${namespace}&var-service=${__data.fields.service}&${__url_time_range}"
+                  }
+                ]
+              },
+              {
+                "id": "custom.width",
+                "value": 320
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Pods"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Youngest pod"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Req/s"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "reqps"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "p95"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "s"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Errors/s"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "reqps"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "CPU"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "percentunit"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Peak RSS (max pod)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ZODB size"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "bytes"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "ZODB objects"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Content items"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Errors/s"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    },
+                    {
+                      "color": "red",
+                      "value": 0.01
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "p95"
+            },
+            "properties": [
+              {
+                "id": "custom.cellOptions",
+                "value": {
+                  "type": "color-text"
+                }
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "text",
+                      "value": null
+                    },
+                    {
+                      "color": "orange",
+                      "value": 1
+                    },
+                    {
+                      "color": "red",
+                      "value": 3
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [
+          {
+            "displayName": "Req/s",
+            "desc": true
+          }
+        ]
+      }
+    },
+    {
+      "type": "row",
+      "title": "Traffic",
+      "id": 200,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 11
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "Request rate",
+      "id": 10,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 12
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Requests per second per instance.",
+      "targets": [
+        {
+          "expr": "label_replace(sum by (service) (rate(plone_requests_total{namespace=\"$namespace\", service=~\"$service\"}[$__rate_interval])), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "stacking": {
+              "mode": "normal"
+            },
+            "fillOpacity": 30
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Request duration p95",
+      "id": 11,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 12
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "95th percentile request duration per instance.",
+      "targets": [
+        {
+          "expr": "label_replace(histogram_quantile(0.95, sum by (service, le) (rate(plone_request_duration_seconds_bucket{namespace=\"$namespace\", service=~\"$service\"}[$__rate_interval]))), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Error rate",
+      "id": 12,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 20
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Failed requests per second per instance.",
+      "targets": [
+        {
+          "expr": "label_replace(sum by (service) (rate(plone_request_errors{namespace=\"$namespace\", service=~\"$service\"}[$__rate_interval])), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "stacking": {
+              "mode": "normal"
+            },
+            "fillOpacity": 30
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "ZODB conflicts",
+      "id": 13,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 20
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "ZODB conflict errors per second per instance.",
+      "targets": [
+        {
+          "expr": "label_replace(sum by (service) (rate(plone_zodb_conflicts_total{namespace=\"$namespace\", service=~\"$service\"}[$__rate_interval])), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Resources",
+      "id": 300,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 28
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "CPU usage",
+      "id": 20,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 29
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "User + system CPU per instance, summed over its pods (100% = one full core).",
+      "targets": [
+        {
+          "expr": "label_replace(sum by (service) (rate(plone_process_cpu_seconds{namespace=\"$namespace\", service=~\"$service\"}[$__rate_interval])), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "custom": {
+            "stacking": {
+              "mode": "normal"
+            },
+            "fillOpacity": 30
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Peak RSS memory (max pod)",
+      "id": 21,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 29
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Highest peak RSS (ru_maxrss) among each instance's pods.",
+      "targets": [
+        {
+          "expr": "label_replace(max by (service) (plone_process_rss_bytes{namespace=\"$namespace\", service=~\"$service\"}), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "row",
+      "title": "Data",
+      "id": 400,
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 37
+      },
+      "panels": []
+    },
+    {
+      "type": "timeseries",
+      "title": "ZODB database size",
+      "id": 30,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 38
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Database size per instance.",
+      "targets": [
+        {
+          "expr": "label_replace(max by (service) (plone_zodb_db_size_bytes{namespace=\"$namespace\", service=~\"$service\"}), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "ZODB object count",
+      "id": 31,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 38
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Number of ZODB objects per instance.",
+      "targets": [
+        {
+          "expr": "label_replace(max by (service) (plone_zodb_object_count{namespace=\"$namespace\", service=~\"$service\"}), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Content items",
+      "id": 32,
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 38
+      },
+      "datasource": {
+        "type": "prometheus",
+        "uid": "${DS_PROMETHEUS}"
+      },
+      "description": "Catalogued content items (all portal types) per instance.",
+      "targets": [
+        {
+          "expr": "label_replace(max by (service) (sum by (service, pod) (plone_content_total{namespace=\"$namespace\", service=~\"$service\"})), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
+          "refId": "A"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "table",
+          "placement": "right",
+          "calcs": [
+            "lastNotNull",
+            "max"
+          ],
+          "sortBy": "Last *",
+          "sortDesc": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      }
+    }
+  ]
+}
