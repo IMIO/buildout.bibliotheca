@@ -44,7 +44,7 @@
   ],
   "timezone": "browser",
   "schemaVersion": 39,
-  "version": 3,
+  "version": 5,
   "refresh": "30s",
   "time": {
     "from": "now-6h",
@@ -172,8 +172,8 @@
       },
       "targets": [
         {
-          "expr": "min(plone_uptime_seconds{namespace=\"$namespace\", service=~\"$service\"})",
-          "legendFormat": "__auto",
+          "expr": "label_replace(min by (service) (plone_uptime_seconds{namespace=\"$namespace\", service=~\"$service\"}), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
           "refId": "A"
         }
       ],
@@ -205,11 +205,12 @@
         },
         "colorMode": "value",
         "graphMode": "area",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "value_and_name",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "wideLayout": true
       },
-      "description": "Lowest uptime among the selected pods: a small value means a pod restarted recently."
+      "description": "Lowest pod uptime per instance: a small value means a pod restarted recently."
     },
     {
       "type": "stat",
@@ -279,8 +280,8 @@
       },
       "targets": [
         {
-          "expr": "max(plone_threads_active{namespace=\"$namespace\", service=~\"$service\"})",
-          "legendFormat": "__auto",
+          "expr": "label_replace(max by (service) (plone_threads_active{namespace=\"$namespace\", service=~\"$service\"}), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
           "refId": "A"
         }
       ],
@@ -312,11 +313,12 @@
         },
         "colorMode": "value",
         "graphMode": "area",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "value_and_name",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "wideLayout": true
       },
-      "description": "Highest thread count among the selected pods."
+      "description": "Highest thread count among each instance's pods."
     },
     {
       "type": "stat",
@@ -334,8 +336,8 @@
       },
       "targets": [
         {
-          "expr": "max(plone_process_rss_bytes{namespace=\"$namespace\", service=~\"$service\"})",
-          "legendFormat": "__auto",
+          "expr": "label_replace(max by (service) (plone_process_rss_bytes{namespace=\"$namespace\", service=~\"$service\"}), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
           "refId": "A"
         }
       ],
@@ -367,11 +369,12 @@
         },
         "colorMode": "value",
         "graphMode": "area",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "value_and_name",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "wideLayout": true
       },
-      "description": "Highest peak RSS among the selected pods. plone_process_rss_bytes comes from ru_maxrss: the peak resident size since start, not the current one."
+      "description": "Highest peak RSS among each instance's pods. plone_process_rss_bytes comes from ru_maxrss: the peak resident size since start, not the current one."
     },
     {
       "type": "stat",
@@ -389,8 +392,8 @@
       },
       "targets": [
         {
-          "expr": "sum(rate(plone_process_cpu_seconds{namespace=\"$namespace\", service=~\"$service\"}[$__rate_interval]))",
-          "legendFormat": "__auto",
+          "expr": "label_replace(sum by (service) (rate(plone_process_cpu_seconds{namespace=\"$namespace\", service=~\"$service\"}[$__rate_interval])), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
           "refId": "A"
         }
       ],
@@ -423,11 +426,12 @@
         },
         "colorMode": "value",
         "graphMode": "area",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "value_and_name",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "wideLayout": true
       },
-      "description": "User + system CPU time per second summed over the selected pods (100% = one full core)."
+      "description": "User + system CPU time per second summed over each instance's pods (100% = one full core)."
     },
     {
       "type": "stat",
@@ -445,8 +449,8 @@
       },
       "targets": [
         {
-          "expr": "max(plone_zodb_connections{namespace=\"$namespace\", service=~\"$service\"})",
-          "legendFormat": "__auto",
+          "expr": "label_replace(max by (service) (plone_zodb_connections{namespace=\"$namespace\", service=~\"$service\"}), \"tenant\", \"$1\", \"service\", \"bibliotheca-(.*)-plone\")",
+          "legendFormat": "{{tenant}}",
           "refId": "A"
         }
       ],
@@ -478,11 +482,12 @@
         },
         "colorMode": "value",
         "graphMode": "area",
-        "textMode": "value",
-        "justifyMode": "center",
-        "orientation": "auto"
+        "textMode": "value_and_name",
+        "justifyMode": "auto",
+        "orientation": "horizontal",
+        "wideLayout": true
       },
-      "description": "Highest number of open ZODB connections in a pod's pool."
+      "description": "Highest number of open ZODB connections in a pod's pool, per instance."
     },
     {
       "type": "row",
@@ -791,8 +796,8 @@
       },
       "targets": [
         {
-          "expr": "max by (database) (plone_zodb_db_size_bytes{namespace=\"$namespace\", service=~\"$service\"})",
-          "legendFormat": "{{database}}",
+          "expr": "max by (service, database) (plone_zodb_db_size_bytes{namespace=\"$namespace\", service=~\"$service\"})",
+          "legendFormat": "{{service}} ({{database}})",
           "refId": "A"
         }
       ],
@@ -801,7 +806,8 @@
           "unit": "bytes"
         },
         "overrides": []
-      }
+      },
+      "description": "One line per instance (each has its own database); pods of an instance report the same value, so max() keeps one. Refreshed every PLONE_OBSERVABILITY_METRICS_CACHE_TTL seconds (60 by default)."
     },
     {
       "type": "timeseries",
@@ -819,8 +825,8 @@
       },
       "targets": [
         {
-          "expr": "max by (database) (plone_zodb_object_count{namespace=\"$namespace\", service=~\"$service\"})",
-          "legendFormat": "{{database}}",
+          "expr": "max by (service, database) (plone_zodb_object_count{namespace=\"$namespace\", service=~\"$service\"})",
+          "legendFormat": "{{service}} ({{database}})",
           "refId": "A"
         }
       ],
@@ -829,7 +835,8 @@
           "unit": "short"
         },
         "overrides": []
-      }
+      },
+      "description": "One line per instance (each has its own database); pods of an instance report the same value, so max() keeps one. Refreshed every PLONE_OBSERVABILITY_METRICS_CACHE_TTL seconds (60 by default)."
     },
     {
       "type": "row",
