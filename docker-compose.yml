@@ -27,7 +27,7 @@ services:
       - PGJSONB_PORT=5432
       - PGJSONB_DB=${PGJSONB_DB:-library}
       - PGJSONB_USER=${PGJSONB_USER:-library}
-      - PGJSONB_PASSWORD=${PGJSONB_PASSWORD}
+      - PGJSONB_PASSWORD=${PGJSONB_PASSWORD:-library}
       - PGJSONB_CACHE_MB=256
       - PGJSONB_BLOB_CACHE_SIZE=1GB
       - S3_ENDPOINT_URL=http://garage:3900
@@ -54,7 +54,7 @@ services:
     environment:
       - POSTGRES_DB=${PGJSONB_DB:-library}
       - POSTGRES_USER=${PGJSONB_USER:-library}
-      - POSTGRES_PASSWORD=${PGJSONB_PASSWORD}
+      - POSTGRES_PASSWORD=${PGJSONB_PASSWORD:-library}
     volumes:
       - library-postgres:/var/lib/postgresql/data
   garage:
