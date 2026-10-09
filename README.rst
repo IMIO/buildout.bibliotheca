@@ -24,19 +24,18 @@ Add imio user to your environment::
     sudo chmod 664 -R var/filestorage/*
     sudo chown $USERNAME:imio -R var/filestorage
 
-Second build the image::
-
-    docker-compose build
-
 Copy ``.env.example`` to ``.env`` (or add the ``PGJSONB_*`` and ``S3_*``
-variables to your existing ``.env``) and initialise the local Garage S3
-storage once::
+variables to your existing ``.env``).
 
-    just garage-init
+Finally build the image and start docker-compose::
 
-Finally start docker-compose::
+    docker compose up --build
 
-    docker-compose up
+``--build`` rebuilds the local ``imiobibliotheca`` image, otherwise compose
+keeps running an image built from an older checkout. The local Garage S3
+storage creates its layout, access key and bucket from the ``S3_*``
+variables on first start, and the instance waits for PostgreSQL and Garage
+to be healthy.
 
 and you can go to http://portal.localhost now
 

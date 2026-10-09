@@ -13,10 +13,14 @@ services:
     links:
       - postgres:db
     depends_on:
-      - postgres
-      - garage
-      - reverseproxy
-      - jaeger
+      postgres:
+        condition: service_healthy
+      garage:
+        condition: service_healthy
+      reverseproxy:
+        condition: service_started
+      jaeger:
+        condition: service_started
     volumes:
       - library-blobcache:/data/blobstorage
     environment:
@@ -57,9 +61,36 @@ services:
       - POSTGRES_PASSWORD=${PGJSONB_PASSWORD:-library}
     volumes:
       - library-postgres:/var/lib/postgresql/data
+    healthcheck:
+      # TCP check: the temporary server of the first-run initdb only listens
+      # on the unix socket, so this waits for the real server
+      test:
+        - CMD-SHELL
+        - pg_isready -h 127.0.0.1 -U $${POSTGRES_USER} -d $${POSTGRES_DB}
+      interval: 2s
+      timeout: 5s
+      retries: 15
   garage:
-    # S3-compatible storage for blobs > 64KB, run `make garage-init` once
+    # S3-compatible storage for blobs > 64KB. On first start it assigns a
+    # single-node layout and creates the access key and bucket from the S3_*
+    # variables.
     image: dxflrs/garage:v2.4.1
+    command: ["/garage", "server", "--single-node", "--default-bucket"]
+    environment:
+      - GARAGE_DEFAULT_ACCESS_KEY=${S3_ACCESS_KEY}
+      - GARAGE_DEFAULT_SECRET_KEY=${S3_SECRET_KEY}
+      - GARAGE_DEFAULT_BUCKET=${S3_BUCKET_NAME:-zodb-blobs}
+    healthcheck:
+      # the image has no shell, exec form only
+      test:
+        - CMD
+        - /garage
+        - bucket
+        - info
+        - ${S3_BUCKET_NAME:-zodb-blobs}
+      interval: 2s
+      timeout: 5s
+      retries: 15
     ports:
       - 3900:3900 # S3 API
       - 3903:3903 # admin API

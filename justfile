@@ -25,25 +25,6 @@ upgrade-steps:
 lint:
     uvx pre-commit run --all
 
-# Initialise local Garage S3 storage (layout, key, bucket) for docker-compose
-garage-init:
-    #!/usr/bin/env bash
-    set -euo pipefail
-    set -a && . ./.env && set +a
-    BUCKET=${S3_BUCKET_NAME:-zodb-blobs}
-    garage() { docker compose exec -T garage /garage "$@"; }
-    docker compose up -d garage
-    sleep 2
-    # Each step is skipped when already done, so the recipe can be re-run safely
-    if garage layout show | grep -q "Current cluster layout version: 0"; then
-        NODE=$(garage node id -q | cut -d@ -f1)
-        garage layout assign -z dc1 -c 1G $NODE
-        garage layout apply --version 1
-    fi
-    garage key info plone >/dev/null 2>&1 || garage key import --yes -n plone $S3_ACCESS_KEY $S3_SECRET_KEY
-    garage bucket info $BUCKET >/dev/null 2>&1 || garage bucket create $BUCKET
-    garage bucket allow --read --write --owner $BUCKET --key plone
-
 # The private recipes below replace make's file targets: they only run when the file is missing
 
 [private]

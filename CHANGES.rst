@@ -4,6 +4,20 @@ CHANGELOG
 6.2.0-4 (unreleased)
 --------------------
 
+- pas.plugins.kimug 1.9.5
+
+  - Close the ZODB connection opened by the `set_oidc_settings` startup
+  subscriber. The leaked connection kept its storage read snapshot open, which
+  blocked the `ALTER TABLE object_state` of plone.pgcatalog on zodb-pgjsonb
+  (lock timeout), so the first commit failed with
+  `column "path" of relation "object_state" does not exist`.
+  [remdub]
+
+- docker-compose: Garage creates its single-node layout, access key and
+  bucket on first start (``just garage-init`` removed), and the instance
+  waits for the PostgreSQL and Garage healthchecks.
+  [remdub]
+
 - Enable OpenTelemetry tracing: plone.observability 1.1.0 with its
   ``opentelemetry`` extra and WSGI filter (plus SQL, S3 and HTTP
   instrumentors in production), and a Jaeger collector in docker-compose.
