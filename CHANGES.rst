@@ -7,6 +7,11 @@ CHANGELOG
 - Migrate to Plone 6.2.2
   [remdub]
 
+- Enable OpenTelemetry tracing: plone.observability 1.1.0 with its
+  ``opentelemetry`` extra and WSGI filter (plus outbound HTTP instrumentors),
+  and a Jaeger collector in docker-compose.
+  [bsuttor]
+
 
 6.2.0-3 (2026-08-28)
 --------------------

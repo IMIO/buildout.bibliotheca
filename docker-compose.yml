@@ -13,6 +13,7 @@ services:
     depends_on:
       - postgres
       - reverseproxy
+      - jaeger
     volumes:
       - ./var/blobstorage:/data/blobstorage
       - ./src:/plone/src
@@ -29,6 +30,10 @@ services:
       - PROJECT_ID=library
       - ZODB_CACHE_SIZE=30000
       - ZEO_CLIENT_CACHE_SIZE=256MB
+      # OpenTelemetry tracing (plone.observability), gRPC OTLP exporter
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
+      - OTEL_SERVICE_NAME=bibliotheca
+      - PLONE_OBSERVABILITY_OTEL_INSTRUMENTORS=1
     command: fg
     labels:
       - 'traefik.enable=true'
@@ -49,6 +54,12 @@ services:
     command:
       - "-m"
       - "1024"
+  jaeger:
+    # OpenTelemetry collector and trace viewer
+    image: jaegertracing/jaeger:2.21.0
+    ports:
+      - 16686:16686 # UI
+      - 4317:4317 # OTLP gRPC
   reverseproxy:
     image: traefik
     command:
