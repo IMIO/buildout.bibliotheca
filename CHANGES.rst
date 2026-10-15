@@ -4,6 +4,17 @@ CHANGELOG
 6.2.0-4 (unreleased)
 --------------------
 
+- bibliotheca.policy 3.1.3
+
+    - Add upgrade step (1018 -> 1019) fixing two JS errors on faceted views:
+      load the ``faceted.jquery`` / ``faceted.view`` bundles deferred instead of
+      async so ``select2`` is defined before the multiselect widgets use it, and
+      write the login modal ``loadLinksWithinModal`` option as a JSON boolean.
+      [boulch]
+
+    - Upgrade dev environment to Plone 6.2.1
+      [remdub]
+
 - bibliotheca.core 3.0.3
     - Do not index the owner data of a patrimoine for the full text search.
       Upgrade step 1006 reindexes the existing patrimoine items.
