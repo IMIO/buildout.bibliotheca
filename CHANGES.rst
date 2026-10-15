@@ -4,7 +4,8 @@ CHANGELOG
 6.2.0-5 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- Use pylibmc2 instead of pylibmc for Python 3.14 compatibility.
+  [remdub]
 
 
 6.2.0-4 (2026-10-15)
