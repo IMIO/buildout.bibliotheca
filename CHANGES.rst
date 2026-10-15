@@ -4,6 +4,15 @@ CHANGELOG
 6.2.0-4 (unreleased)
 --------------------
 
+- bibliotheca.core 3.0.3
+    - Do not index the owner data of a patrimoine for the full text search.
+      Upgrade step 1006 reindexes the existing patrimoine items.
+      [boulch]
+
+    - Show the correct title of each map layer on the faceted map.
+      Get the title from the map layers vocabulary, not "Titre".
+      [boulch]
+
 - bibliotheca.core 3.0.2
 
     - BIBLI-100 : Fix missing markers on the faceted map. 
