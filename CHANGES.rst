@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-6.2.0-5 (unreleased)
+6.2.0-5 (2026-10-15)
 --------------------
 
 - Use pylibmc2 instead of pylibmc for Python 3.14 compatibility.
