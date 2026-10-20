@@ -4,7 +4,12 @@ CHANGELOG
 6.2.0-6 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- bibliotheca.policy 3.1.4
+
+    - Fix : Add upgrade step to open the "Log in" action as a regular link instead of a modal
+      ``pas.plugins.kimug`` redirects ``/login`` to Keycloak, on another domain, 
+      so the modal's ajax request was blocked by CORS
+      [boulch, remdub]
 
 
 6.2.0-5 (2026-10-15)
