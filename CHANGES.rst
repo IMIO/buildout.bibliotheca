@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-6.2.0-6 (unreleased)
+6.2.0-6 (2026-10-20)
 --------------------
 
 - bibliotheca.policy 3.1.4
