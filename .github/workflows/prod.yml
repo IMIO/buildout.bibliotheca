@@ -12,11 +12,14 @@ jobs:
     runs-on: gha-runners-smartweb
     steps:
       - name: Tag and notify
-        uses: IMIO/gha/tag-notify@v1.0.1
+        uses: IMIO/gha/tag-notify@v8
         with:
           IMAGE_NAME: ${{ vars.IMAGE_NAME }}
           IMAGE_TAG: ${{ vars.IMAGE_TAG_STAGING }}
-          NEW_IMAGE_TAG: ${{ vars.IMAGE_TAG_PRODUCTION }}
+          NEW_IMAGE_TAGS: |
+            ${{ vars.IMAGE_TAG_PRODUCTION }}
+            ${{ vars.IMAGE_TAG_PRODUCTION }}-${{ github.run_number }}
+            ${{ github.ref_name }}
           REGISTRY_URL: ${{ secrets.HARBOR_URL }}
           REGISTRY_USERNAME: ${{ secrets.SMARTWEB_HARBOR_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.SMARTWEB_HARBOR_PASSWORD }}
@@ -40,6 +43,7 @@ jobs:
   deploy-on-k8s:
     environment: production
     runs-on: gha-runners-smartweb
+    needs: [tag]
     steps:
       - name: Update Kubernetes tag in production
         uses: IMIO/gha/k8s-update-tag@v5
