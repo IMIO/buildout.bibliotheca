@@ -13,14 +13,9 @@ services:
     links:
       - postgres:db
     depends_on:
-      postgres:
-        condition: service_healthy
-      garage:
-        condition: service_healthy
-      reverseproxy:
-        condition: service_started
-      jaeger:
-        condition: service_started
+      - postgres
+      - reverseproxy
+      - jaeger
     volumes:
       - library-blobcache:/data/blobstorage
     environment:
@@ -103,6 +98,12 @@ services:
         aliases:
           # virtual-hosted style bucket address used by boto3
           - ${S3_BUCKET_NAME:-zodb-blobs}.garage
+  memcached:
+    image: memcached:1.5.20
+    command:
+      - "-m"
+      - "1024"
+
   jaeger:
     # OpenTelemetry collector and trace viewer
     image: jaegertracing/jaeger:2.21.0

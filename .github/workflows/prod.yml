@@ -12,28 +12,29 @@ jobs:
     runs-on: gha-runners-smartweb
     steps:
       - name: Tag and notify
-        uses: IMIO/gha/tag-notify@v1.0.1
+        uses: IMIO/gha/tag-notify@v8
         with:
           IMAGE_NAME: ${{ vars.IMAGE_NAME }}
           IMAGE_TAG: ${{ vars.IMAGE_TAG_STAGING }}
-          NEW_IMAGE_TAG: ${{ vars.IMAGE_TAG_PRODUCTION }}
+          NEW_IMAGE_TAGS: |
+            ${{ vars.IMAGE_TAG_PRODUCTION }}
+            ${{ vars.IMAGE_TAG_PRODUCTION }}-${{ github.run_number }}
+            ${{ github.ref_name }}
           REGISTRY_URL: ${{ secrets.HARBOR_URL }}
           REGISTRY_USERNAME: ${{ secrets.SMARTWEB_HARBOR_USERNAME }}
           REGISTRY_PASSWORD: ${{ secrets.SMARTWEB_HARBOR_PASSWORD }}
           MATTERMOST_WEBHOOK_URL: ${{ secrets.SMARTWEB_MATTERMOST_WEBHOOK_URL }}
-  deploy:
-    environment:
-      name: production
+  deploy-on-k8s:
+    environment: production
     runs-on: gha-runners-smartweb
     needs: [tag]
     steps:
-      - name: Get tomorrow date
-        run: echo "DEPLOY_DATE=$(date --date='03:00 tomorrow' +'%Y-%m-%dT%H:%M:%S%z')" >> $GITHUB_ENV
-      - name: Deploy to production and notify
-        uses: IMIO/gha/rundeck-notify@v3.9.3
+      - name: Update Kubernetes tag in production
+        uses: IMIO/gha/k8s-update-tag@v5
         with:
-          RUNDECK_URL: ${{ secrets.RUNDECK_URL }}
-          RUNDECK_TOKEN: ${{ secrets.SMARTWEB_RUNDECK_TOKEN }}
-          RUNDECK_JOB_ID: ${{ vars.RUNDECK_JOB_ID }}
-          RUNDECK_PARAMETERS: '-F "runAtTime=${{ env.DEPLOY_DATE }}" -F "filter=name ${{ vars.NODE_NAME }}" -F "option.tag=${{ vars.IMAGE_TAG_PRODUCTION }}" -F "option.image_name=${{ vars.IMAGE_NAME }}" -F "option.service_name=${{ vars.SERVICE_NAME }}"'
-          MATTERMOST_WEBHOOK_URL: ${{ secrets.SMARTWEB_MATTERMOST_WEBHOOK_URL }}
+          TAG: ${{ github.ref_name }}
+          REPO_TOKEN_NAME: ${{ secrets.BIBLIOTHECA_ARGOCD_TOKEN_NAME }}
+          REPO_ACCESS_TOKEN: ${{ secrets.BIBLIOTHECA_ARGOCD_ACCESS_TOKEN }}
+          REPO_URL: ${{ secrets.BIBLIOTHECA_ARGOCD_REPO_URL }}
+          TARGET_BRANCH: main
+          VALUES_FILE_PATH: prod/common/values.yaml

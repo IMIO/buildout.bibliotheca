@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-6.2.0-4 (unreleased)
+6.2.0-8 (unreleased)
 --------------------
 
 - pas.plugins.kimug 1.9.5
@@ -30,6 +30,77 @@ CHANGELOG
   (with a warning) when `PLONE_EXTENSION_IDS` is not set.
   [remdub]
 
+- Enable OpenTelemetry tracing: plone.observability 1.1.0 with its
+  ``opentelemetry`` extra and WSGI filter (plus outbound HTTP instrumentors),
+  and a Jaeger collector in docker-compose.
+  [bsuttor]
+
+
+
+6.2.0-7 (2026-10-23)
+--------------------
+
+- Migrate to Plone 6.2.2.1
+  [remdub]
+
+
+6.2.0-6 (2026-10-20)
+--------------------
+
+- bibliotheca.policy 3.1.4
+
+    - Fix : Add upgrade step to open the "Log in" action as a regular link instead of a modal
+      ``pas.plugins.kimug`` redirects ``/login`` to Keycloak, on another domain, 
+      so the modal's ajax request was blocked by CORS
+      [boulch, remdub]
+
+
+6.2.0-5 (2026-10-15)
+--------------------
+
+- Use pylibmc2 instead of pylibmc for Python 3.14 compatibility.
+  [remdub]
+
+
+6.2.0-4 (2026-10-15)
+--------------------
+
+- bibliotheca.policy 3.1.3
+
+    - Add upgrade step (1018 -> 1019) fixing two JS errors on faceted views:
+      load the ``faceted.jquery`` / ``faceted.view`` bundles deferred instead of
+      async so ``select2`` is defined before the multiselect widgets use it, and
+      write the login modal ``loadLinksWithinModal`` option as a JSON boolean.
+      [boulch]
+
+    - Upgrade dev environment to Plone 6.2.1
+      [remdub]
+
+- bibliotheca.core 3.0.3
+    - Do not index the owner data of a patrimoine for the full text search.
+      Upgrade step 1006 reindexes the existing patrimoine items.
+      [boulch]
+
+    - Show the correct title of each map layer on the faceted map.
+      Get the title from the map layers vocabulary, not "Titre".
+      [boulch]
+
+- bibliotheca.core 3.0.2
+
+    - BIBLI-100 : Fix missing markers on the faceted map. 
+      The GeoJSON is rendered on #faceted-results-items while the visible map is #faceted-map-container, 
+      and the only bridge between them was trigger('leaflet.refresh'). 
+      pat-leaflet 2.x implements no such event and reads data-geojson only once at init, 
+      from its own element, so the trigger was a silent no-op. 
+      Drive the pattern through its own API (init_geojson() on the instance stored 
+      as el["pattern-leaflet"]) instead, both on load and after each faceted AJAX query. 
+      Same fix for the hover popups, which relied on the equally non-existent 
+      leaflet.openPopup / leaflet.closePopup events. 
+      [boulch]
+
+    - Migrate dev environment to Plone 6.2.1
+      [remdub]
+
 - Migrate to Plone 6.2.2
   [remdub]
 
@@ -43,6 +114,7 @@ CHANGELOG
   from ``PLONE_EXTENSION_IDS``; existing ones are converted with
   ``scripts/install_pgcatalog.py`` (one-way, back up the database first).
   [remdub]
+
 
 
 6.2.0-3 (2026-08-28)

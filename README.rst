@@ -72,6 +72,7 @@ the PostgreSQL database first, then run in the instance container::
 
     bin/instance run scripts/install_pgcatalog.py
 
+
 tracing
 -------
 
@@ -86,7 +87,9 @@ it at the collector's 4317 port (not the 4318 HTTP port)::
 The image already sets ``OTEL_SERVICE_NAME=bibliotheca`` and excludes the
 ``/ok`` healthcheck with ``OTEL_PYTHON_WSGI_EXCLUDED_URLS`` (comma-separated
 regexes searched in the path). ``PLONE_OBSERVABILITY_OTEL_INSTRUMENTORS=1``
+
 adds SQL (psycopg), S3 and outbound HTTP child spans; expect a lot more spans.
+
 
 docker-compose runs a Jaeger collector with these variables set: browse
 http://localhost:16686 to see the traces. To trace the dev instance too::
