@@ -4,6 +4,39 @@ CHANGELOG
 6.2.0-8 (unreleased)
 --------------------
 
+- collective.preventactions 0.4.0
+
+    - Fix: the "Prevent actions" form now reindexes ``object_provides``, so the
+      uninstall profile also unmarks objects protected through the form.
+      [remdub]
+
+    - Fix: the uninstall profile now removes the "Prevent actions" object action.
+      [remdub]
+
+    - Modernize package (Plone 6.2.3, PEP420, plone.meta, tests, french locales)
+      [remdub]
+
+    - Add behavior to choose which content types to prevent.
+      [remdub]
+
+- collective.plausible 1.0a7
+
+    - Fix: ``@@plausible-view``, ``@@plausible-healthcheck`` and the tracking
+      snippet only treat Plausible as set when it is enabled and its URL and site
+      are filled in (they always did before). The object menu links no longer
+      require the token.
+      [remdub]
+
+    - Fix: the healthcheck calls the Plausible API once per page with a 5 s
+      timeout, and shows the PostgreSQL and sites cache statuses instead of
+      repeating ClickHouse's.
+      [remdub]
+
+    - Modernize package: Plone 6.1 / 6.2 and Python 3.10 to 3.13 only, PEP 420
+      native namespace, plone.meta, metadata in ``pyproject.toml``, uv Makefile.
+      Drop Plone 5.2 / 6.0 support.
+      [remdub]
+
 - collective.behavior.gallery 2.0.0
 
     - Switch to PEP 420 native namespace package.
@@ -12,8 +45,12 @@ CHANGELOG
     - Migrate dev environment and CI to Plone 6.2.3, update classifiers.
       [remdub]
 
-- Migrate to Plone 6.2.3
-  [remdub]
+- Migrate to Plone 6.2.3 and bump needed dependencies [remdub]
+
+  - plone.app.imagecropping 4.0.0
+  - eea.facetednavigation 16.5
+  - collective.taxonomy 4.0.0
+  - collective.easyform 5.0.2
 
 
 6.2.0-7 (2026-10-23)
