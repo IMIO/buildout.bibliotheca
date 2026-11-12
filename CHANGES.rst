@@ -4,6 +4,14 @@ CHANGELOG
 6.2.0-8 (unreleased)
 --------------------
 
+- collective.behavior.gallery 2.0.0
+
+    - Switch to PEP 420 native namespace package.
+      [remdub]
+
+    - Migrate dev environment and CI to Plone 6.2.3, update classifiers.
+      [remdub]
+
 - Migrate to Plone 6.2.3
   [remdub]
 
