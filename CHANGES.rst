@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-6.2.0-8 (unreleased)
+6.2.0-8 (2026-11-13)
 --------------------
 
 - collective.preventactions 0.4.0
