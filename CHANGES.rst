@@ -4,7 +4,10 @@ CHANGELOG
 6.2.0-9 (unreleased)
 --------------------
 
-- Nothing changed yet.
+- collective.geolocationbehavior 2.0.0
+
+    - Switch to PEP 420 native namespace package.
+      [erral, petschki]
 
 
 6.2.0-8 (2026-11-13)
