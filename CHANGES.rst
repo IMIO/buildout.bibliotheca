@@ -4,6 +4,11 @@ CHANGELOG
 6.2.0-9 (unreleased)
 --------------------
 
+- WEB-3639 : Add ``make test``: build the production image, boot it with Postgres and
+  memcached, and run smoke tests (``IMIO/gha`` ``plone-image-test-notify`` checks plus
+  ``tests/test_bibliotheca.py``). CI runs them on pull requests and before the staging build
+  [remdub]
+
 - collective.geolocationbehavior 2.0.0
 
     - Switch to PEP 420 native namespace package.

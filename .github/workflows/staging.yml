@@ -15,8 +15,13 @@ permissions:
   security-events: write
 
 jobs:
+  test:
+    if: contains(github.event.head_commit.message, 'Back to development:') == false && contains(github.event.head_commit.message, 'Preparing release') == false
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit
   build-push:
     runs-on: gha-runners-smartweb
+    needs: test
     if: contains(github.event.head_commit.message, 'Back to development:') == false && contains(github.event.head_commit.message, 'Preparing release') == false
     steps:
       - name: Build tags
