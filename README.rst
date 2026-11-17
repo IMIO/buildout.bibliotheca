@@ -35,6 +35,29 @@ Finally start docker-compose::
 
 and you can go to http://portal.localhost now
 
+tests
+-----
+
+``make test`` checks the stack as a whole after a pin or source change: it builds the
+production image (``prod.cfg``), starts it with ``tests/docker-compose.test.yml``
+(throwaway Postgres and memcached, random host ports, nothing mounted from ``var/``),
+lets ``collective.big.bang`` create the site, then runs:
+
+- the generic Plone checks from IMIO/gha ``plone-image-test-notify`` (health probes,
+  add-ons installed with no pending upgrade, site root and its JS/CSS, control panels,
+  no error in the instance log);
+- ``tests/test_bibliotheca.py`` (Bibliotheca content types).
+
+Log records that are known noise go in ``tests/log_allowlist.txt``. Building needs
+``docker login harbor.imio.be`` (private base image). To work on the generic checks,
+point ``PLONE_IMAGE_TEST`` at a local clone of IMIO/gha::
+
+    make test PLONE_IMAGE_TEST=/path/to/gha/plone-image-test-notify
+
+CI runs the same tests on pull requests (``tests.yml``) and before each staging build:
+in ``staging.yml``, ``build-push`` needs the ``test`` job, so a failing image never gets
+the ``:staging`` tag.
+
 tracing
 -------
 
