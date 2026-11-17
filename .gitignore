@@ -31,3 +31,4 @@ eggs/
 .DS_Store
 resources/
 .env
+__pycache__/
