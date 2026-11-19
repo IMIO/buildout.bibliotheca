@@ -9,6 +9,11 @@ CHANGELOG
   ``tests/test_bibliotheca.py``). CI runs them on pull requests and before the staging build
   [remdub]
 
+- WEB-3639 : Staging builds the image once: it is pushed as ``:<short sha>``, tested, then
+  tagged ``:staging`` (``tag-notify``) instead of being built again after the tests.
+  The image scan now scans the bibliotheca image instead of the smartweb one
+  [remdub]
+
 - collective.geolocationbehavior 2.0.0
 
     - Switch to PEP 420 native namespace package.
