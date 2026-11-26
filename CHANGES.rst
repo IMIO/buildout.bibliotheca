@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-6.2.0-9 (unreleased)
+6.2.0-9 (2026-11-26)
 --------------------
 
 - Write the trace ID of the current request into every log line (``trace_id=<32 hex>``,
