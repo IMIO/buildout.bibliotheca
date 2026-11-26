@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-6.2.0-10 (unreleased)
+6.2.0-10 (2026-11-26)
 ---------------------
 
 - Trace less: the image no longer traces static resources (``++webresource++``,
