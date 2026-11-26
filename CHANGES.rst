@@ -4,6 +4,13 @@ CHANGELOG
 6.2.0-9 (unreleased)
 --------------------
 
+- Write the trace ID of the current request into every log line (``trace_id=<32 hex>``,
+  ``0`` outside a request), so a search for a trace ID finds the log lines of that request.
+  ``templates/wsgi-logging.ini`` is the recipe's default logging template with
+  plone.observability's ``TraceContextFormatter`` on both formatters. plone.observability
+  is checked out from the ``feat/log-trace-context`` branch of a fork until it is released
+  [remdub]
+
 - WEB-3639 : Add ``make test``: build the production image, boot it with Postgres and
   memcached, and run smoke tests (``IMIO/gha`` ``plone-image-test-notify`` checks plus
   ``tests/test_bibliotheca.py``). CI runs them on pull requests and before the staging build

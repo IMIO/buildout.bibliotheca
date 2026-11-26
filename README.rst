@@ -80,3 +80,10 @@ http://localhost:16686 to see the traces. To trace the dev instance too::
 
     docker compose up -d jaeger
     OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4317 OTEL_SERVICE_NAME=bibliotheca-dev bin/instance fg
+
+Every log line carries the trace ID of the request that logged it
+(``trace_id=<32 hex>``, ``0`` outside a request): search the logs for a trace ID
+to find its lines. ``templates/wsgi-logging.ini`` sets this up with
+plone.observability's ``TraceContextFormatter``. In the event log the ID comes
+before the message; in the access log it is appended, after the combined log
+format.
