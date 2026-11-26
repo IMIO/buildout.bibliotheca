@@ -33,6 +33,8 @@ services:
       # OpenTelemetry tracing (plone.observability), gRPC OTLP exporter
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4317
       - OTEL_SERVICE_NAME=bibliotheca
+      # every trace, not the image's 10% sample
+      - OTEL_TRACES_SAMPLER=parentbased_always_on
       - PLONE_OBSERVABILITY_OTEL_INSTRUMENTORS=1
     command: fg
     labels:

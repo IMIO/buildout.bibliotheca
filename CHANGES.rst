@@ -4,7 +4,12 @@ CHANGELOG
 6.2.0-10 (unreleased)
 ---------------------
 
-- Nothing changed yet.
+- Trace less: the image no longer traces static resources (``++webresource++``,
+  ``++resource++``, ``++plone++``, ``++theme++``) and keeps 1 trace in 10
+  (``OTEL_TRACES_SAMPLER=parentbased_traceidratio``, ``OTEL_TRACES_SAMPLER_ARG=0.1``).
+  docker-compose keeps every trace. The README documents both, and the root span
+  named after the method alone since 6.2.0-9
+  [remdub]
 
 
 6.2.0-9 (2026-11-26)
