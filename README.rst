@@ -69,11 +69,24 @@ it at the collector's 4317 port (not the 4318 HTTP port)::
 
     OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
 
-The image already sets ``OTEL_SERVICE_NAME=bibliotheca`` and excludes the
-``/ok`` healthcheck with ``OTEL_PYTHON_WSGI_EXCLUDED_URLS`` (comma-separated
-regexes searched in the path). ``PLONE_OBSERVABILITY_OTEL_INSTRUMENTORS=1``
-adds outbound HTTP child spans. SQL spans are not available here: the
-instrumentor targets psycopg 3, while RelStorage uses psycopg2.
+The image already sets ``OTEL_SERVICE_NAME=bibliotheca``. With
+``OTEL_PYTHON_WSGI_EXCLUDED_URLS`` (comma-separated regexes searched in the
+path), it excludes the ``/ok`` healthcheck and the static resources
+(``++webresource++``, ``++resource++``, ``++plone++``, ``++theme++``).
+``PLONE_OBSERVABILITY_OTEL_INSTRUMENTORS=1`` adds outbound HTTP child spans.
+SQL spans are not available here: the instrumentor targets psycopg 3, while
+RelStorage uses psycopg2.
+
+The image keeps 1 trace in 10 (``OTEL_TRACES_SAMPLER=parentbased_traceidratio``,
+``OTEL_TRACES_SAMPLER_ARG=0.1``). An incoming ``traceparent`` header decides
+instead. To keep every trace, set ``OTEL_TRACES_SAMPLER=parentbased_always_on``.
+Metrics that a collector derives from spans (``traces_spanmetrics_*``) only
+count the sampled requests, so multiply them by 10. The exact request counts
+are in the ``@@metrics`` Prometheus endpoint.
+
+The root span of a request is named after the HTTP method alone (``GET``),
+and the path is in its ``url.path`` / ``http.target`` attribute. A path in
+the span name gave the collector's spanmetrics connector one series per URL.
 
 docker-compose runs a Jaeger collector with these variables set: browse
 http://localhost:16686 to see the traces. To trace the dev instance too::

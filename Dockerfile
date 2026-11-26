@@ -50,7 +50,9 @@ ENV PIP=26.2.2 \
   PLONE_EXTENSION_IDS=plone.app.caching:default,plonetheme.barceloneta:default,bibliotheca.policy:default \
   DEFAULT_LANGUAGE=fr \
   OTEL_SERVICE_NAME=bibliotheca \
-  OTEL_PYTHON_WSGI_EXCLUDED_URLS='^/ok$'
+  OTEL_PYTHON_WSGI_EXCLUDED_URLS='^/ok$,[+]{2}(webresource|resource|plone|theme)[+]{2}' \
+  OTEL_TRACES_SAMPLER=parentbased_traceidratio \
+  OTEL_TRACES_SAMPLER_ARG=0.1
 
 VOLUME /data/blobstorage
 WORKDIR /plone
