@@ -34,6 +34,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /plone
 COPY --chown=imio *.cfg /plone/
 COPY --chown=imio scripts /plone/scripts
+COPY --chown=imio templates /plone/templates
 RUN su -c "buildout -c prod.cfg -t 30 -N" -s /bin/sh imio
 
 
